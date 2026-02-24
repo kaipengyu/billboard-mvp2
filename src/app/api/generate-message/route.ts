@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
     let latitude: number;
     let longitude: number;
     let locationName: string | undefined;
-    let zipOverride: string | null = (body.zip as string) || null;
+    const zipOverride: string | null = (body.zip as string) || null;
 
     if (locationParam && predefinedLocations[locationParam.toLowerCase()]) {
       const coords = predefinedLocations[locationParam.toLowerCase()];
