@@ -391,29 +391,31 @@ export default function BackendPage() {
       {/* Group panel */}
       <div className={styles.groupPanel}>
 
-        {/* ── Keywords per zip ── */}
-        <div className={styles.section}>
-          <p className={styles.sectionTitle}>Keywords per Zip Code</p>
-          {group.zips.map(zip => {
-            const keywords = group.localKeywords[zip] ?? [];
-            return (
-              <div key={zip} className={styles.zipRow}>
-                <span className={styles.zipLabel}>{zip}</span>
-                <ChipList
-                  items={keywords}
-                  onAdd={val => {
-                    const next = { ...group.localKeywords, [zip]: [...keywords, val] };
-                    updateGroup(activeIdx, { localKeywords: next });
-                  }}
-                  onRemove={i => {
-                    const next = { ...group.localKeywords, [zip]: keywords.filter((_, j) => j !== i) };
-                    updateGroup(activeIdx, { localKeywords: next });
-                  }}
-                />
-              </div>
-            );
-          })}
-        </div>
+        {/* ── Keywords per zip (hidden for General group) ── */}
+        {group.zips.length > 0 && (
+          <div className={styles.section}>
+            <p className={styles.sectionTitle}>Keywords per Zip Code</p>
+            {group.zips.map(zip => {
+              const keywords = group.localKeywords[zip] ?? [];
+              return (
+                <div key={zip} className={styles.zipRow}>
+                  <span className={styles.zipLabel}>{zip}</span>
+                  <ChipList
+                    items={keywords}
+                    onAdd={val => {
+                      const next = { ...group.localKeywords, [zip]: [...keywords, val] };
+                      updateGroup(activeIdx, { localKeywords: next });
+                    }}
+                    onRemove={i => {
+                      const next = { ...group.localKeywords, [zip]: keywords.filter((_, j) => j !== i) };
+                      updateGroup(activeIdx, { localKeywords: next });
+                    }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* ── General options ── */}
         <div className={styles.section}>

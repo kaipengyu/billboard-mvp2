@@ -43,11 +43,64 @@ export type SelectedProgram = {
   triggerLabel: string;
 };
 
+// ── General fallback group (used when zip doesn't match any defined group) ─────
+// zips: [] signals this is the catch-all. Editable from /backend.
+
+export const DEFAULT_GENERAL_GROUP: ZipGroup = {
+  name: 'General',
+  zips: [],
+  tone: 'general homeowner or renter, energy utility customer',
+  toneStyle: 'clear and friendly — broadly applicable, focuses on simple savings and comfort benefits',
+  toneExample: 'Small upgrades can make a big difference in comfort and energy costs year-round.',
+  localKeywords: {},
+  generalOptions: [
+    {
+      probability: 0.4,
+      program: 'Smart Thermostat',
+      keyMessages: ['Up to $100 incentive', 'Improve comfort and reduce everyday energy waste'],
+    },
+    {
+      probability: 0.35,
+      program: 'HVAC Tune-Up',
+      keyMessages: ['Keep your system running efficiently year-round', 'System testing at no additional cost'],
+    },
+    {
+      probability: 0.25,
+      program: 'Home Performance with ENERGY STAR®',
+      keyMessages: ['Average of $3,000 in rebates for qualifying home improvements'],
+    },
+  ],
+  weatherConditions: [
+    {
+      type: 'heat_wave',
+      program: 'Smart Thermostat',
+      keyMessages: ['Optimize cooling schedules during high-demand periods'],
+    },
+    {
+      type: 'cold_snap',
+      program: 'HVAC Tune-Up',
+      keyMessages: ['Ensure heating reliability before temperatures drop further'],
+    },
+  ],
+  timeConditions: [
+    {
+      type: 'peak_demand_hours',
+      program: 'Smart Energy Rewards',
+      keyMessages: ['Earn rewards by reducing energy use during peak hours'],
+    },
+  ],
+};
+
 // ── Group lookup ───────────────────────────────────────────────────────────────
+// Groups with zips:[] are catch-all fallbacks; zip-specific groups take priority.
 
 export function findGroupByZip(zip: string | null, groups: ZipGroup[]): ZipGroup {
-  if (!zip) return groups[2] ?? groups[0];
-  return groups.find(g => g.zips.includes(zip)) ?? (groups[2] ?? groups[0]);
+  if (zip) {
+    const match = groups.find(g => g.zips.length > 0 && g.zips.includes(zip));
+    if (match) return match;
+  }
+  // Fall back to the General group (zips: []), or first group if none defined
+  return groups.find(g => g.zips.length === 0) ?? groups[0];
 }
 
 // ── Reverse geocode → zip code ────────────────────────────────────────────────
@@ -190,13 +243,24 @@ Current conditions: ${temperature}°F, ${weatherDescription}, local time ${local
     : `No specific weather or time trigger — keep the message broadly useful and relevant for this area.`;
 
   const zipKeywords = zip ? (group.localKeywords[zip] ?? []) : [];
-  const localBlock = zipKeywords.length > 0
-    ? `LOCAL AREA REFERENCES — pick one and work it in naturally if it fits:
+  let localBlock: string;
+  if (zipKeywords.length > 0) {
+    // Zip-specific group: neighborhood keyword is required
+    localBlock = `LOCAL AREA REFERENCE (REQUIRED) — you MUST include one of these in the message:
 ${zipKeywords.join(', ')}
-Use it the way a local would — e.g. "If you're in ${zipKeywords[0]}..." or "${zipKeywords[0]} homeowners..." or "Hey ${zipKeywords[0]}...". Only use it if it flows naturally; never force it.
+Work it in the way a local would — e.g. "If you're in ${zipKeywords[0]}..." or "${zipKeywords[0]} homeowners..." or "Hey ${zipKeywords[0]}...".
 
-`
-    : '';
+`;
+  } else if (location) {
+    // General / out-of-range: use the city name from the weather API
+    localBlock = `LOCAL AREA REFERENCE (REQUIRED) — you MUST mention this location naturally in the message:
+${location}
+Work it in like a local reference — e.g. "If you're in ${location}..." or "${location} homeowners..." or "Hey ${location}...".
+
+`;
+  } else {
+    localBlock = '';
+  }
 
   return `You are a copywriter for an energy utility company serving the Baltimore region.
 Write a short, engaging billboard message to promote the "${selected.program}" program.
