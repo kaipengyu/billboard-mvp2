@@ -43,54 +43,6 @@ export type SelectedProgram = {
   triggerLabel: string;
 };
 
-// ── General fallback group (used when zip doesn't match any defined group) ─────
-// zips: [] signals this is the catch-all. Editable from /backend.
-
-export const DEFAULT_GENERAL_GROUP: ZipGroup = {
-  name: 'General',
-  zips: [],
-  tone: 'general homeowner or renter, energy utility customer',
-  toneStyle: 'clear and friendly — broadly applicable, focuses on simple savings and comfort benefits',
-  toneExample: 'Small upgrades can make a big difference in comfort and energy costs year-round.',
-  localKeywords: {},
-  generalOptions: [
-    {
-      probability: 0.4,
-      program: 'Smart Thermostat',
-      keyMessages: ['Up to $100 incentive', 'Improve comfort and reduce everyday energy waste'],
-    },
-    {
-      probability: 0.35,
-      program: 'HVAC Tune-Up',
-      keyMessages: ['Keep your system running efficiently year-round', 'System testing at no additional cost'],
-    },
-    {
-      probability: 0.25,
-      program: 'Home Performance with ENERGY STAR®',
-      keyMessages: ['Average of $3,000 in rebates for qualifying home improvements'],
-    },
-  ],
-  weatherConditions: [
-    {
-      type: 'heat_wave',
-      program: 'Smart Thermostat',
-      keyMessages: ['Optimize cooling schedules during high-demand periods'],
-    },
-    {
-      type: 'cold_snap',
-      program: 'HVAC Tune-Up',
-      keyMessages: ['Ensure heating reliability before temperatures drop further'],
-    },
-  ],
-  timeConditions: [
-    {
-      type: 'peak_demand_hours',
-      program: 'Smart Energy Rewards',
-      keyMessages: ['Earn rewards by reducing energy use during peak hours'],
-    },
-  ],
-};
-
 // ── Group lookup ───────────────────────────────────────────────────────────────
 // Groups with zips:[] are catch-all fallbacks; zip-specific groups take priority.
 
