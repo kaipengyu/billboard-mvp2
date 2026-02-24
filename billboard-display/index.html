@@ -173,8 +173,6 @@
     .refresh-btn:hover { background: rgba(124, 58, 237, 0.25); border-color: var(--accent-hi); }
     .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Persona selector — hidden (personas not in use) ─── */
-    .persona-bar { display: none; }
   </style>
 </head>
 <body>
@@ -202,9 +200,6 @@
       <p class="error-text" id="errorEl" style="display:none;"></p>
     </div>
   </div>
-
-  <!-- Persona selector (hidden — not in use) -->
-  <div class="persona-bar" id="personaBar" aria-hidden="true"></div>
 
   <!-- Footer -->
   <div class="footer">
@@ -397,26 +392,18 @@
         };
       }
 
-      // Show raw coords immediately, then replace with city name + zip async
-      locationLbl.textContent = `Location: ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
-      zoneLbl.textContent     = 'Zone: detecting…';
-
-      if (!lastCoords || (!lastCoords.displayName && !lastCoords.zip)) {
-        reverseGeocode(coords.latitude, coords.longitude).then(geo => {
-          if (!geo) return;
-          if (geo.display) locationLbl.textContent = 'Location: ' + geo.display;
-          coords.displayName = geo.display;
-          coords.zip         = geo.zip;
-          if (lastCoords) {
-            lastCoords.displayName = geo.display;
-            lastCoords.zip         = geo.zip;
-          }
-        });
-      } else {
-        if (lastCoords.displayName) locationLbl.textContent = 'Location: ' + lastCoords.displayName;
-        coords.displayName = lastCoords.displayName;
-        coords.zip         = lastCoords.zip;
+      // Await reverse geocode so zip is available before the feed request
+      showLoading('Resolving location…');
+      const geo = await reverseGeocode(coords.latitude, coords.longitude);
+      if (geo) {
+        coords.displayName = geo.display;
+        coords.zip         = geo.zip;
       }
+
+      locationLbl.textContent = coords.displayName
+        ? 'Location: ' + coords.displayName
+        : `Location: ${coords.latitude.toFixed(4)}, ${coords.longitude.toFixed(4)}`;
+      zoneLbl.textContent = coords.zip ? 'ZIP: ' + coords.zip : '';
 
       lastCoords = { ...coords };
 
@@ -444,12 +431,6 @@
       showMessage(message);
       setDot('ok');
       updatedLbl.textContent = 'Last updated: ' + formatTime(new Date());
-      // Zone label: show zip if we have it
-      if (coords.zip) {
-        zoneLbl.textContent = 'ZIP: ' + coords.zip;
-      } else {
-        zoneLbl.textContent = '';
-      }
     } catch (err) {
       setDot('error');
       if (!firstLoad) {
