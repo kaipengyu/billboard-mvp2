@@ -445,10 +445,22 @@ a.secondary {
   position: relative;
 }
 
-.buttonGroup {
+.inputRow {
   display: flex;
   gap: 1rem;
-  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.inputRow .comboboxContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-shrink: 0;
+  gap: 1rem;
+  align-items: flex-start;
 }
 
 .locationInput {
@@ -581,13 +593,9 @@ a.secondary {
   font-weight: 500;
 }
 
-/* Persona Selector Styles */
+/* Persona Selector Styles — hidden (not in use) */
 .personaSelector {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-width: 0;
+  display: none;
 }
 
 .personaLabel {
@@ -790,9 +798,14 @@ a.secondary {
     gap: 0.75rem;
   }
   
+  .inputRow {
+    flex-direction: column;
+  }
+
   .buttonGroup {
     flex-direction: column;
     gap: 0.75rem;
+    width: 100%;
   }
   
   .locationInput,

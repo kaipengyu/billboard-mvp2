@@ -448,49 +448,51 @@ export default function Home() {
             {/* Geo-location Section */}
             <div className={styles.locationSection}>
               <label className={styles.sectionLabel}>Location</label>
-              <div className={styles.comboboxContainer}>
-                <input
-                  type="text"
-                  value={manualLocation}
-                  onChange={(e) => handleInputChange(e.target.value)}
-                  onFocus={handleInputFocus}
-                  onBlur={handleInputBlur}
-                  placeholder="Enter zip code or city name..."
-                  className={styles.locationInput}
-                  disabled={isGeocoding || loading}
-                />
-                {showDropdown && filteredLocations.length > 0 && (
-                  <div className={styles.dropdown}>
-                    {filteredLocations.map((location, index) => (
-                      <div
-                        key={index}
-                        className={styles.dropdownItem}
-                        onClick={() => handleLocationSelect(location)}
-                      >
-                        {location}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className={styles.buttonGroup}>
-                <button
-                  type="submit"
-                  disabled={isGeocoding || loading || !manualLocation.trim()}
-                  className={styles.locationButton}
-                >
-                  {isGeocoding ? 'Finding...' : 'Enter US location'}
-                </button>
-                {hasManualLocation && (
-                  <button
-                    type="button"
-                    onClick={clearManualLocation}
-                    className={styles.clearButton}
+              <div className={styles.inputRow}>
+                <div className={styles.comboboxContainer}>
+                  <input
+                    type="text"
+                    value={manualLocation}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    placeholder="Enter zip code or city name..."
+                    className={styles.locationInput}
                     disabled={isGeocoding || loading}
+                  />
+                  {showDropdown && filteredLocations.length > 0 && (
+                    <div className={styles.dropdown}>
+                      {filteredLocations.map((location, index) => (
+                        <div
+                          key={index}
+                          className={styles.dropdownItem}
+                          onClick={() => handleLocationSelect(location)}
+                        >
+                          {location}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className={styles.buttonGroup}>
+                  <button
+                    type="submit"
+                    disabled={isGeocoding || loading || !manualLocation.trim()}
+                    className={styles.locationButton}
                   >
-                    Use Current Location
+                    {isGeocoding ? 'Finding...' : 'Enter US location'}
                   </button>
-                )}
+                  {hasManualLocation && (
+                    <button
+                      type="button"
+                      onClick={clearManualLocation}
+                      className={styles.clearButton}
+                      disabled={isGeocoding || loading}
+                    >
+                      Use Current Location
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
