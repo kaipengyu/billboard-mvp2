@@ -27,6 +27,7 @@ const labelOf = (s: string) => s.replace(/_/g, ' ');
 const CANONICAL_PROGRAMS = [
   'Connected Rewards',
   'HVAC Replacement',
+  'HVAC Tune-Up',
   'Home Performance with ENERGY STAR®',
   'My Account',
   'Smart Thermostat',
@@ -34,7 +35,6 @@ const CANONICAL_PROGRAMS = [
 
 const PROGRAM_ALIASES: Record<string, string> = {
   HVAC: 'HVAC Replacement',
-  'HVAC Tune-Up': 'HVAC Replacement',
   'Home Performance with ENERGY STAR': 'Home Performance with ENERGY STAR®',
   'Smart Energy Rewards': 'Connected Rewards',
 };
