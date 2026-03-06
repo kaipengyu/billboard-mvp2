@@ -25,6 +25,7 @@ const TIME_TYPES: TimeCondType[] = [
 const labelOf = (s: string) => s.replace(/_/g, ' ');
 
 const CANONICAL_PROGRAMS = [
+  'Appliance Rebates',
   'Connected Rewards',
   'HVAC Replacement',
   'HVAC Tune-Up',
