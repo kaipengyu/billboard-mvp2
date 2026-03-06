@@ -121,7 +121,9 @@ Verify it is running at `http://localhost:3000`.
 
 ### 2. Ask Claude Code to capture
 
-Open Claude Code in this project directory and say:
+**Note for Cursor users:** The Figma MCP in Cursor does not expose `generate_figma_design` (that tool is **Claude Code only**, remote Figma MCP). To push the landing page into Figma you must run the capture from **Claude Code** using the prompt below. In Cursor you can still take a screenshot (e.g. `pulseiq-landing-page-capture.png` in this repo) and drag it into the PulseIQ file manually if needed.
+
+Open **Claude Code** in this project directory and say:
 
 ```
 Use the Figma MCP to capture the landing page and add it to the PulseIQ Figma file:

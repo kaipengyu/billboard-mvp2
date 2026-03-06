@@ -24,6 +24,42 @@ const TIME_TYPES: TimeCondType[] = [
 
 const labelOf = (s: string) => s.replace(/_/g, ' ');
 
+const CANONICAL_PROGRAMS = [
+  'Connected Rewards',
+  'HVAC Replacement',
+  'Home Performance with ENERGY STAR®',
+  'My Account',
+  'Smart Thermostat',
+];
+
+const PROGRAM_ALIASES: Record<string, string> = {
+  HVAC: 'HVAC Replacement',
+  'HVAC Tune-Up': 'HVAC Replacement',
+  'Home Performance with ENERGY STAR': 'Home Performance with ENERGY STAR®',
+  'Smart Energy Rewards': 'Connected Rewards',
+};
+
+const normalizeProgram = (program: string): string => {
+  const normalized = PROGRAM_ALIASES[program] ?? program;
+  return CANONICAL_PROGRAMS.includes(normalized) ? normalized : CANONICAL_PROGRAMS[0];
+};
+
+const normalizeGroupPrograms = (group: ZipGroup): ZipGroup => ({
+  ...group,
+  generalOptions: group.generalOptions.map(opt => ({
+    ...opt,
+    program: normalizeProgram(opt.program),
+  })),
+  weatherConditions: group.weatherConditions.map(cond => ({
+    ...cond,
+    program: normalizeProgram(cond.program),
+  })),
+  timeConditions: group.timeConditions.map(cond => ({
+    ...cond,
+    program: normalizeProgram(cond.program),
+  })),
+});
+
 // ── Chip component ─────────────────────────────────────────────────────────────
 
 function ChipList({
@@ -129,9 +165,6 @@ function GeneralSection({
                 onChange={e => update(i, { program: e.target.value })}
               >
                 {programs.map(p => <option key={p} value={p}>{p}</option>)}
-                {!programs.includes(opt.program) && (
-                  <option value={opt.program}>{opt.program}</option>
-                )}
               </select>
             </div>
             <div className={styles.fieldGroup}>
@@ -207,9 +240,6 @@ function WeatherSection({
                 onChange={e => update(i, { program: e.target.value })}
               >
                 {programs.map(p => <option key={p} value={p}>{p}</option>)}
-                {!programs.includes(cond.program) && (
-                  <option value={cond.program}>{cond.program}</option>
-                )}
               </select>
             </div>
             <button className={styles.removeBtn} onClick={() => onChange(conditions.filter((_, j) => j !== i))}>
@@ -273,9 +303,6 @@ function TimeSection({
                 onChange={e => update(i, { program: e.target.value })}
               >
                 {programs.map(p => <option key={p} value={p}>{p}</option>)}
-                {!programs.includes(cond.program) && (
-                  <option value={cond.program}>{cond.program}</option>
-                )}
               </select>
             </div>
             <button className={styles.removeBtn} onClick={() => onChange(conditions.filter((_, j) => j !== i))}>
@@ -312,7 +339,7 @@ export default function BackendPage() {
   useEffect(() => {
     fetch('/api/config')
       .then(r => r.json())
-      .then((data: ZipGroup[]) => setGroups(data))
+      .then((data: ZipGroup[]) => setGroups(data.map(normalizeGroupPrograms)))
       .catch(() => setToast({ msg: 'Failed to load config', ok: false }));
   }, []);
 
@@ -352,12 +379,8 @@ export default function BackendPage() {
 
   const group = groups[activeIdx];
 
-  // Collect all distinct program names in this group for dropdowns
-  const allPrograms = Array.from(new Set([
-    ...group.generalOptions.map(o => o.program),
-    ...group.weatherConditions.map(c => c.program),
-    ...group.timeConditions.map(c => c.program),
-  ])).filter(Boolean).sort();
+  // Keep one shared canonical list across all zip groups.
+  const allPrograms = CANONICAL_PROGRAMS;
 
   return (
     <div className={styles.container}>
