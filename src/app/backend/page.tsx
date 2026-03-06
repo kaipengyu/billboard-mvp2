@@ -26,9 +26,11 @@ const labelOf = (s: string) => s.replace(/_/g, ' ');
 
 const CANONICAL_PROGRAMS = [
   'Appliance Rebates',
+  'ENERGY STAR® Certified New Homes',
   'Connected Rewards',
   'HVAC Replacement',
   'HVAC Tune-Up',
+  'Heat Pump Water Heater',
   'Home Performance with ENERGY STAR®',
   'My Account',
   'Smart Thermostat',
